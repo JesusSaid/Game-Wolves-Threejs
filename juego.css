@@ -1,0 +1,60 @@
+.colors {
+  background-image: linear-gradient(270deg,
+    #ffd587 0,
+    #ffda82 3.33%,
+    #ffde7f 6.67%,
+    #ffe37f 10%,
+    #f3e780 13.33%,
+    #e5eb83 16.67%,
+    #d7ef89 20%,
+    #c8f290 23.33%,
+    #b8f599 26.67%,
+    #a8f8a3 30%,
+    #96faaf 33.33%,
+    #84fcbb 36.67%,
+    #70fdc8 40%,
+    #59fed6 43.33%,
+    #3cffe4 46.67%,
+    #00fff2 50%,
+    #00ffff 53.33%,
+    #00feff 56.67%,
+    #00fdff 60%,
+    #00fcff 63.33%,
+    #00faff 66.67%,
+    #00f8ff 70%,
+    #2ff5ff 73.33%,
+    #58f2ff 76.67%,
+    #77eeff 80%,
+    #92eaff 83.33%,
+    #abe6ff 86.67%,
+    #c2e1ff 90%,
+    #d7dcff 93.33%,
+    #ebd7ff 96.67%,
+    #fdd2ff 100%
+  );
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.boton {
+  padding: 10px;
+  /*espacio alrededor texto*/
+  background-color: #2e8b67;
+  /*color botón*/
+  color: #ffffff;
+  /*color texto*/
+  text-decoration: none;
+  /*decoración texto*/
+  text-transform: uppercase;
+  /*capitalización texto*/
+  font-family: 'Helvetica', sans-serif;
+  /*tipografía texto*/
+  border-radius: 50px;
+  /*bordes redondos*/ 
+}

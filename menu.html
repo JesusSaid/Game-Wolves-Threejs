@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="juego.css">
+</head>
+
+<body class="colors">
+    <div class="button-container">
+        <a href="./Juego.html" class="boton">
+            START
+        </a>
+        <button onclick="instrccion()" class="boton">INSTRUCCIONES</button>
+        <button onclick="controles()" class="boton">CONTROLES</button>
+    </div>
+
+    <script>
+        function instrccion() {
+            Swal.fire({
+                title: 'Tienes que encontrar a las 10 figuras con forma de lobo. Estan escondidas en todo el mapa (incluso dentro de los objetos). Tienes 1 minuto con 30 segundos.\n Buena suerte!',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            })
+        }
+        function controles() {
+            Swal.fire({
+                title: 'CONTROLES: \nW: Adelante , \nS: Atras , \nA: Izquierda , \nD: Derecha,  \n⬅: Girar a la izquierda, \n➡: Girar a la derecha, \n Click para tomar al lobo, \n Barra espaciadora: Pause.',
+                width: 600,
+                padding: '3em',
+                color: '#716add',
+                backdrop: `rgba(5,50,120,0.5) url("https://sweetalert2.github.io/images/nyan-cat.gif") left top no-repeat`
+            })
+        }
+
+    </script>
+</body>
+
+</html>

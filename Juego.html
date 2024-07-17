@@ -1,0 +1,633 @@
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .time {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 18px;
+            font-size: 30px;
+        }
+
+        .obj {
+            position: fixed;
+            top: 10px;
+            left: 1000px;
+            font-size: 18px;
+            font-size: 30px;
+        }
+
+        .pause {
+            position: fixed;
+            top: 1%;
+            left: 17%;
+            font-size: 240px;
+            font-weight: bold;
+            font-style: italic;
+            color: rgb(142, 159, 156);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <canvas id="miCanvas"></canvas>
+    <audio id="audio"  loop volume="1"></audio>
+    <!--<p class="time" id="tiempo"></p>-->
+    <p class="obj" id="encontado"></p>
+    <p class="pause" id="pause"></p>
+    <script type="importmap">
+                {
+                    "imports": {
+                        "three": "../build/three.module.js",
+                        "three/addons/": "../jsm/"
+                    }
+                }
+            </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import Stats from 'three/addons/libs/stats.module.js';
+        import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
+        import { MTLLoader } from 'three/addons/loaders/MTLLoader.js'
+        import { FBXLoader } from 'three/addons/loaders/FBXLoader.js'
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        const mtlLoader = new MTLLoader();
+        const objLoader = new OBJLoader();
+/*
+        window.onload = function () {
+            setInterval(actualizarTiempo, 1000);
+        };
+*/
+        document.addEventListener('DOMContentLoaded', musicaPlay);
+
+        var keyboard = {}
+        var pausa = false;
+        var mensaje = false;
+        var lobote;
+
+        let personaje1;
+        let personaje2;
+        let personaje3;
+        let personaje4;
+        let personaje5;
+        let personaje6;
+        let personaje7;
+        let personaje8;
+        let personaje9;
+        let personaje10;
+        //var wolf1 = new THREE.Box3().setFromObject(personaje10);
+        var objetosEncontrados = 0;
+
+        var player = { height: 1, speed: 0.06, turnSpeed: 0.02 }
+
+        const canvas = document.getElementById('miCanvas');
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(100, 1280 / 720, 0.1, 1000);
+        var draggable = new THREE.Object3D;
+
+
+        scene.background = new THREE.Color(0xb7d5e5);
+        const Floor = new THREE.Mesh(
+            new THREE.PlaneGeometry(100, 100),
+            new THREE.MeshPhongMaterial({ color: 0xffffff, wireframe: false })
+        );
+        Floor.rotation.x -= Math.PI / 2;
+        Floor.receiveShadow = true;
+        scene.add(Floor);
+
+        const caja = new THREE.Mesh(
+            new THREE.BoxGeometry(0.5,0.5,0.5),
+            new THREE.MeshBasicMaterial({color:0x4444ff})
+        )
+        caja.position.set(0,player.height,-4);
+        scene.add(caja);
+
+        var caja1;
+
+
+
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        scene.add(ambientLight);
+
+        const light = new THREE.PointLight(0xffffff, 0.8, 18);
+        light.position.set(-3, 6, -3);
+        scene.add(light);
+
+        camera.position.set(0, player.height, -5);
+        camera.lookAt(new THREE.Vector3(0, player.height, 0));
+
+        const renderer = new THREE.WebGL1Renderer({ canvas });
+        renderer.setSize(1280, 720);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.BasicShadowMap;
+        const clicMouse = new THREE.Vector2();
+        const raycaster = new THREE.Raycaster();
+
+
+
+        function onPointerMove(event) {
+            clicMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            clicMouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(clicMouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children);
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF1' && pausa == false) {
+                scene.remove(personaje1);
+                objetosEncontrados++;
+            }
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF2' && pausa == false) {
+                scene.remove(personaje2);
+                objetosEncontrados++;
+            }
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF3' && pausa == false) {
+                scene.remove(personaje3);
+                objetosEncontrados++;
+            }
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF4' && pausa == false) {
+                scene.remove(personaje4);
+                objetosEncontrados++;
+            }
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF5' && pausa == false) {
+                scene.remove(personaje5);
+                objetosEncontrados++;
+            }
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF6' && pausa == false) {
+                scene.remove(personaje6);
+                objetosEncontrados++;
+            }
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF7' && pausa == false) {
+                scene.remove(personaje7);
+                objetosEncontrados++;
+            }
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF8' && pausa == false) {
+                scene.remove(personaje8);
+                objetosEncontrados++;
+            }
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF9' && pausa == false) {
+                scene.remove(personaje9);
+                objetosEncontrados++;
+            }
+            if (intersects.length > 0 && intersects[0].object.parent?.userData['draggable'] && intersects[0].object.parent?.userData['name'] == 'WOLF10' && pausa == false) {
+                scene.remove(personaje10);
+                objetosEncontrados++;
+            }
+
+            document.getElementById('encontado').textContent = "Objetos encontrados: " + objetosEncontrados;
+
+            if (objetosEncontrados == 10 && mensaje == false) {
+                Swal.fire(
+                    'Buen trabajo!',
+                    'Encontraste todos los objetos con éxito!'
+                )
+                setTimeout(function () {
+                    window.location.href = 'menu.html';
+                }, 3000);
+                mensaje = true
+            }
+
+
+        }
+
+        window.addEventListener('click', onPointerMove);
+        animate();
+        window.addEventListener('keydown', keyDown);
+        window.addEventListener('keyup', keyUp);
+        casas();
+        edificios();
+
+        
+/*
+        lobo1(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+        lobo2(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+        lobo3(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+        lobo4(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+        lobo5(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+        lobo6(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+        lobo7(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+        lobo8(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+        lobo9(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+        lobo10(Math.random() * (40 - (-40)) + (-40), Math.random() * (2 - 0) + 0, Math.random() * (40 - (-40)) + (-40))
+*/
+
+        lobo1(8, -1.5, -30)
+        lobo2(44, 0, 44)
+        lobo3(-44, 0, -46)
+        lobo4(40, 0, -18)
+        lobo5(-40, 0, 20)
+        lobo6(3, -1, 15)
+        lobo7(2, 3.7, 11)
+        lobo8(-21, 3.7, 40)
+        lobo9(38, 2, -1.2)
+        lobo10(1.5, 1, -8)
+
+
+        function lobo1(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje1 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF1';
+                    obj.position.set(x, y, z)
+                    obj.rotation.y = 90 * Math.PI / 180
+                    obj.rotation.x = 90 * Math.PI / 50
+                    obj.scale.setScalar(0.09)
+                    scene.add(obj);
+                }
+            );
+        }
+        function lobo2(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje2 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF2';
+                    obj.position.set(x, y, z)
+                    obj.rotation.y = 90 * Math.PI / 180
+                    obj.scale.setScalar(0.09)
+                    scene.add(obj);
+                }
+            );
+        }
+        function lobo3(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje3 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF3';
+                    obj.position.set(x, y, z)
+                    obj.rotation.y = 90 * Math.PI / 180
+                    obj.scale.setScalar(0.09)
+                    scene.add(obj);
+                }
+            );
+        }
+        function lobo4(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje4 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF4';
+                    obj.position.set(x, y, z)
+                    obj.rotation.y = 90 * Math.PI / 180
+                    obj.scale.setScalar(0.09)
+                    scene.add(obj);
+                }
+            );
+        }
+        function lobo5(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje5 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF5';
+                    obj.position.set(x, y, z)
+                    obj.rotation.y = 90 * Math.PI / 180
+                    obj.scale.setScalar(0.09)
+                    scene.add(obj);
+                }
+            );
+        }
+        function lobo6(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje6 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF6';
+                    obj.position.set(x, y, z)
+                    obj.rotation.y = 90 * Math.PI / 180
+                    obj.scale.setScalar(0.05)
+                    scene.add(obj);
+                }
+            );
+        }
+        function lobo7(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje7 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF7';
+                    obj.position.set(x, y, z)
+                    obj.rotation.y = 90 * Math.PI / 18
+                    obj.scale.setScalar(0.05)
+                    scene.add(obj);
+                }
+            );
+        }
+        function lobo8(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje8 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF8';
+                    obj.position.set(x, y, z)
+                    obj.rotation.y = 90 * Math.PI / 180
+                    obj.scale.setScalar(0.08)
+                    scene.add(obj);
+                }
+            );
+        }
+        function lobo9(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje9 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF9';
+                    obj.position.set(x, y, z)
+                    obj.rotation.y = 90 * Math.PI / 18
+                    obj.scale.setScalar(0.08)
+                    scene.add(obj);
+                }
+            );
+        }
+        function lobo10(x, y, z) {
+            const fbxLoader = new FBXLoader()
+            fbxLoader.load('/modelos/Wolf_With_Baked_Action_Animations_For_Export.fbx',
+                (obj) => {
+                    personaje10 = obj;
+                    obj.userData['draggable'] = true;
+                    obj.userData['name'] = 'WOLF10';
+                    obj.position.set(x, y, z)
+                    obj.rotation.z = 90 * Math.PI / 180
+                    obj.scale.setScalar(0.03)
+                    scene.add(obj);
+                }
+            );
+        }
+
+
+        function casas() {
+            mtlLoader.load('/modelos/unit_houseLarge.mtl', (materials) => {
+                //this.objLoader.setMaterials(materials);
+                objLoader.load('/modelos/unit_houseLarge.obj', (objCasas) => {
+                    scene.add(objCasas);
+                    objCasas.position.set(38, 0, 40);
+                    objCasas.rotation.y = -Math.PI / 4;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+            mtlLoader.load('/modelos/unit_houseLarge.mtl', (materials) => {
+                //this.objLoader.setMaterials(materials);
+                objLoader.load('/modelos/unit_houseLarge.obj', (objCasas) => {
+                    //scene.add(objCasas);
+                    objCasas.position.set(15, 0, -40);
+                    objCasas.rotation.y = Math.PI / 2;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+            mtlLoader.load('/modelos/unit_houseLarge.mtl', (materials) => {
+                //this.objLoader.setMaterials(materials);
+                objLoader.load('/modelos/unit_houseLarge.obj', (objCasas) => {
+                    scene.add(objCasas);
+                    objCasas.position.set(38, 0, 1);
+                    objCasas.rotation.y = Math.PI / 23;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+            mtlLoader.load('/modelos/unit_houseLarge.mtl', (materials) => {
+                //this.objLoader.setMaterials(materials);
+                objLoader.load('/modelos/unit_houseLarge.obj', (objCasas) => {
+                    scene.add(objCasas);
+                    objCasas.position.set(3, 0, 15);
+                    objCasas.rotation.y = Math.PI / 23;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+            mtlLoader.load('/modelos/unit_houseLarge.mtl', (materials) => {
+                //this.objLoader.setMaterials(materials);
+                objLoader.load('/modelos/unit_houseLarge.obj', (objCasas) => {
+                    scene.add(objCasas);
+                    objCasas.position.set(10, 0, 40);
+                    objCasas.rotation.y = Math.PI / 23;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+            mtlLoader.load('/modelos/unit_houseLarge.mtl', (materials) => {
+                //this.objLoader.setMaterials(materials);
+                objLoader.load('/modelos/unit_houseLarge.obj', (objCasas) => {
+                    scene.add(objCasas);
+                    objCasas.position.set(-20, 0, 40);
+                    objCasas.rotation.y = Math.PI / 23;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+
+        }
+
+        function edificios() {
+            mtlLoader.load('/modelos/dirt_lumber.mtl', (materials) => {
+                //this.objLoader.setMaterials(materials);
+                objLoader.load('/modelos/dirt_lumber.obj', (objCasas) => {
+                    scene.add(objCasas);
+                    objCasas.position.set(15, 0, -30);
+                    objCasas.rotation.y = Math.PI / 23;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+
+            mtlLoader.load('/modelos/building_village.mtl', (materials) => {
+                objLoader.setMaterials(materials);
+                objLoader.load('/modelos/building_village.obj', (objCasas) => {
+                    scene.add(objCasas);
+                    objCasas.position.set(42, 0, -20);
+                    objCasas.rotation.y = Math.PI / 23;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+            mtlLoader.load('/modelos/building_cabin.mtl', (materials) => {
+                objLoader.setMaterials(materials);
+                objLoader.load('/modelos/building_cabin.obj', (objCasas) => {
+                    scene.add(objCasas);
+                    objCasas.position.set(-42, 0, 20);
+                    objCasas.rotation.y = Math.PI;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+            mtlLoader.load('/modelos/building_cabin.mtl', (materials) => {
+                objLoader.setMaterials(materials);
+                objLoader.load('/modelos/building_cabin.obj', (objCasas) => {
+                    scene.add(objCasas);
+                    objCasas.position.set(-20, 0, -20);
+                    objCasas.rotation.y = Math.PI;
+                    objCasas.scale.set(25, 25, 25);
+                })
+            })
+
+
+        }
+
+/*
+        let minutos = 10;
+        let segundos = 30;
+
+        function actualizarTiempo() {
+            if (minutos == 0 && segundos == 0 && mensaje == false) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'GAME OVER'
+                });
+                setTimeout(function () {
+                    window.location.href = 'menu.html';
+                }, 3000);
+                mensaje = true
+            } else {
+                if (pausa == false) {
+                    if (segundos == 0) {
+                        minutos--;
+                        segundos = 59;
+                    } else {
+                        segundos--;
+                    }
+
+                    document.getElementById('tiempo').innerHTML = "Tiempo restante: " + minutos + " : " + segundos;
+                }
+            }
+        }
+*/
+        function musicaPlay(pausa) {
+            const audioElement = document.getElementById('audio');
+            if (pausa == false) {
+                audioElement.play();
+            } else {
+                audioElement.pause();
+            }
+        }
+
+
+        function calculaDistancia(){
+            
+            caja1 = new THREE.Box3().setFromObject(caja);
+            
+            lobote = new THREE.Box3().setFromObject(personaje10);
+            console.log(lobote);
+            console.log(caja1)
+            //var inter = caja1.intersectsBox(lobote);
+            //console.log(inter);
+
+            var distancia = caja1.distanceToPoint(lobote.position.clone());
+            console.log(distancia);
+        }
+
+        function animate() {
+            if (keyboard[32]) {
+                pausa = !pausa;
+            }
+
+            musicaPlay(pausa)
+
+            if (pausa == true) {
+                document.getElementById('pause').textContent = " PAUSA ";
+            } else {
+                document.getElementById('pause').textContent = "";
+            }
+
+            requestAnimationFrame(() => {
+                animate();
+            });
+
+
+
+            if (keyboard[87] && pausa == false) { // W key
+                camera.position.x -= Math.sin(camera.rotation.y) * player.speed;
+                camera.position.z -= -Math.cos(camera.rotation.y) * player.speed;
+                caja.position.x -= Math.sin(caja.rotation.y) * player.speed;
+                caja.position.z -= -Math.cos(caja.rotation.y) * player.speed;
+                
+            }
+
+            if (keyboard[83] && pausa == false) { // S key
+                camera.position.x += Math.sin(camera.rotation.y) * player.speed;
+                camera.position.z += -Math.cos(camera.rotation.y) * player.speed;
+                caja.position.x += Math.sin(caja.rotation.y) * player.speed;
+                caja.position.z += -Math.cos(caja.rotation.y) * player.speed;
+            }
+
+            if (keyboard[65] && pausa == false) { // A key
+                camera.position.x += Math.sin(camera.rotation.y + Math.PI / 2) * player.speed;
+                camera.position.z += -Math.cos(camera.rotation.y + Math.PI / 2) * player.speed;
+                caja.position.x += Math.sin(caja.rotation.y + Math.PI / 2) * player.speed;
+                caja.position.z += -Math.cos(caja.rotation.y + Math.PI / 2) * player.speed;
+            }
+
+            if (keyboard[68] && pausa == false) { // D key
+                camera.position.x += Math.sin(camera.rotation.y - Math.PI / 2) * player.speed;
+                camera.position.z += -Math.cos(camera.rotation.y - Math.PI / 2) * player.speed;
+                caja.position.x += Math.sin(caja.rotation.y - Math.PI / 2) * player.speed;
+                caja.position.z += -Math.cos(caja.rotation.y - Math.PI / 2) * player.speed;
+            }
+
+
+            if (keyboard[37] && pausa == false) {
+                camera.rotation.y -= player.turnSpeed;
+                caja.rotation.y -= player.turnSpeed;
+            }
+            if (keyboard[39] && pausa == false) {
+                camera.rotation.y += player.turnSpeed;
+                caja.rotation.y += player.turnSpeed;
+            }
+
+            var temx = camera.position.x
+            var temy = camera.position.z
+            var temCx = caja.position.x
+            var temCy = caja.position.z
+
+
+            if (camera.position.x >= 50) {
+                camera.position.x = temx - 0.2;
+                 caja.position.x = temCx - 0.2;
+            }
+            if (camera.position.x <= -50) {
+                camera.position.x = temx + 0.2;
+                caja.position.x = temCx + 0.2;
+            }
+            if (camera.position.z >= 50) {
+                camera.position.z = temy - 0.2;
+                caja.position.z = temCy - 0.2;
+            }
+            if (camera.position.z <= -50) {
+                camera.position.z = temy + 0.2;
+                caja.position.z = temCy + 0.2;
+            }
+
+            if(personaje10 != undefined ){
+                calculaDistancia();
+            }
+
+            
+
+            
+
+            
+
+            renderer.render(scene, camera);
+        }
+
+        function keyDown(event) {
+            keyboard[event.keyCode] = true;
+        }
+
+        function keyUp(event) {
+            keyboard[event.keyCode] = false;
+        }
+
+
+    </script>
+
+</body>
+
+
+</html>
